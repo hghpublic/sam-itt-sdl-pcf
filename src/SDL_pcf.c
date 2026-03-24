@@ -900,7 +900,7 @@ void PCF_FreeStaticFont(PCF_StaticFont *self)
 static inline int PCF_StaticFontGetGlyphIndex(PCF_StaticFont *font, int c)
 {
     char *pos = memchr(font->glyphs, c, font->nglyphs);
-    return pos - font->glyphs;
+    return pos ? pos - font->glyphs : -1;
 }
 
 /**
