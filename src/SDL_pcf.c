@@ -37,6 +37,11 @@ typedef void (*PixelLighter)(Uint8 *ptr, Uint32 color);
 static void filter_dedup(char *base, size_t len);
 static bool number_to_ascii(void *value, PCF_NumberType type, int8_t precision, char *buffer, size_t buffer_len);
 
+static int charcmp(const void *a, const void *b)
+{
+    return *(const char*)a - *(const char*)b;
+}
+
 
 PCF_Font *PCF_FontInit(PCF_Font *self, const char *filename)
 {
@@ -838,7 +843,7 @@ PCF_StaticFont *PCF_FontCreateStaticFontVA(PCF_Font *font, SDL_Color *color, int
     rv->text_color = *color;
     col =  SDL_MapRGBA(rv->raster->format, color->r, color->g, color->b, color->a);
     rv->nglyphs = strlen(rv->glyphs);
-    qsort(rv->glyphs, rv->nglyphs, sizeof(char), (__compar_fn_t) strcmp);
+    qsort(rv->glyphs, rv->nglyphs, sizeof(char), charcmp);
     filter_dedup(rv->glyphs, rv->nglyphs);
 
     rv->metrics = font->xfont.fontPrivate->metrics->metrics;
