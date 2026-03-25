@@ -643,7 +643,7 @@ void PCF_FontGetSizeRequest(PCF_Font *font, const char *str, bool tight, Uint32 
             BitmapFontRec *bitmapFont;
             bitmapFont  = font->xfont.fontPrivate;
             for(int i = 0; i < len; i++){
-                int c = str[i];
+                int c = (unsigned char)str[i];
                 if(c >= bitmapFont->num_chars) continue;
                 ascent_max = MAX(ascent_max, PCF_FontInkMetrics(font)[c].ascent);
                 descent_max = MAX(descent_max, PCF_FontInkMetrics(font)[c].descent);
