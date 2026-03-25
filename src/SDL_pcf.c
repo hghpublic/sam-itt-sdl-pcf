@@ -827,6 +827,10 @@ PCF_StaticFont *PCF_FontCreateStaticFontVA(PCF_Font *font, SDL_Color *color, int
     rv->nglyphs = tlen;
     rv->glyphs = SDL_calloc(rv->nglyphs + 1, sizeof(char));
     rv->glyph_heights = SDL_calloc(rv->nglyphs, sizeof(InkHeight));
+    if(!rv->glyphs || !rv->glyph_heights){
+        SDL_SetError("Couldn't allocate memory for new PCF_StaticFont\n");
+        goto out;
+    }
 
     iter = rv->glyphs;
     for(int i = 0; i < nsets; i++){
@@ -840,6 +844,10 @@ PCF_StaticFont *PCF_FontCreateStaticFontVA(PCF_Font *font, SDL_Color *color, int
     w += font->xfont.fontPrivate->pDefault->metrics.characterWidth;
     /*Creates a 32bit surface by default which might be overkill*/
     rv->raster = SDL_CreateRGBSurfaceWithFormat(0, w, h, 32, SDL_PIXELFORMAT_RGBA32);
+    if(!rv->raster){
+        SDL_SetError("Couldn't create surface for static font: %s\n", SDL_GetError());
+        goto out;
+    }
     rv->text_color = *color;
     col =  SDL_MapRGBA(rv->raster->format, color->r, color->g, color->b, color->a);
     rv->nglyphs = strlen(rv->glyphs);
@@ -868,6 +876,12 @@ PCF_StaticFont *PCF_FontCreateStaticFontVA(PCF_Font *font, SDL_Color *color, int
     });
 
     return rv;
+
+out:
+    SDL_free(rv->glyphs);
+    SDL_free(rv->glyph_heights);
+    SDL_free(rv);
+    return NULL;
 }
 
 
